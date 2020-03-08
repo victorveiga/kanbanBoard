@@ -41,9 +41,11 @@ app.get('/getChamado/', (requisicao, resposta)=>{
         if(erro){
             throw erro
         }
+        console.log(resultado.rows)
         resposta.status(200).send(resultado.rows)
 
     })
+    console.log('Chegou aqui')
 })
 
 // method post

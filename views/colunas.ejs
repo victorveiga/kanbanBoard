@@ -1,0 +1,52 @@
+<%- contentFor('colunas') %>
+<section style="height: 100%;">
+    <div id="colunas" class="row d-flex justify-content-center">
+        <% for (coluna in colunas) {%>
+            <div id="<%= colunas[coluna].id_nome %>" 
+                class="col-md-2 m-2 text-center aColuna" 
+                ondragover="permiteSoltar(event)" 
+                ondrop="soltar(event)">
+                <span style="display: block; border-bottom: 1px solid #ccc; margin-bottom: 5px;"><%= colunas[coluna].descricao%></span>
+
+                <% Array.from(chamados).forEach(chamado => {%> <!-- Laço de chamados -->
+
+                    <% if (chamado.status == colunas[coluna].id) {%>
+
+                        <!-- Seta tipo chamado -->
+                        <% 
+                            let descricao_tipo_protocolo = ''
+                            let cor                      = ''
+                            let id_protocolo             = 'card_'+chamado.id
+                            tipos_chamado.forEach(e => {
+                                if (e.id == chamado.tipo_protocolo) {
+                                    descricao_tipo_protocolo = e.descricao
+                                    cor                      = e.cor
+                                }
+                            });
+                        %> 
+
+                        <!-- Chamado Card -->
+                        <div id="<%= id_protocolo %>" 
+                                draggable="true"
+                                ondragstart="arrastarInicio(event)" 
+                                class="card bg-<%= cor %> text-white mb-2" 
+                                style="cursor: pointer;"
+                                >
+                                <div class="card-header">
+                                    <%= descricao_tipo_protocolo %>
+                                    <button style="display:inline" class="close" aria-label="Close" onClick="removerChamado('<%= id_protocolo %>')">&times;</button>
+                                </div>
+                                <div class="card-body">
+                                    <h4 class="card-title"><%=chamado.titulo.trim().substring(0,15)%></h4>
+                                    <h6 class="card-subtitle">Nº: <%=chamado.id%></h6>
+                                    <button id="btn_protocolo_<%=chamado.id%>" class="btn btn-outline-light mt-3" onclick="AbreCard(this.id.replace('btn_protocolo_',''))">Abrir</button>
+                                </div>
+                        </div>
+                        <!-- Fim Chamado Card -->
+                    <% } %>
+
+                <% });%> <!-- Laço de chamados -->
+            </div>
+        <% }%>    
+    </div>
+</section>

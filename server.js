@@ -18,26 +18,49 @@ const express        = require('express')
 const app            = express()
 const bodyParser     = require('body-parser')
 const pool           = new require('./postgresql-database')
+const expressLayouts = require('express-ejs-layouts')
 
 app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
 app.use(express.static(__dirname));
+app.set('view engine', 'ejs')
+app.use(expressLayouts) 
+
+// Busca alguns dados preliminares
+let xColunas = null
+
+pool.query('SELECT * FROM COLUNA',(erro,resultado) => {
+    if(erro){ throw erro }
+    xColunas = resultado.rows
+})
+
+let xTipo_Protocolo = Array(
+    { id: 'i' , cor: 'danger'  , descricao: 'Inconsistência' },
+    { id: 'n' , cor: 'success' , descricao: 'Novo recurso'   },
+    { id: 'm' , cor: 'info'    , descricao: 'Melhoria'       }
+)
+
 
 // Rota principal
 app.get('/', (req, res)=>{
-    let filename = parse(req.url).pathname, fullPath
-
-    if(filename === '/') {
-        filename = defaultIndex;
-    }
-
-    fullPath = __dirname + rootFolder + filename;
-    res.sendFile(fullPath)
+    pool.query('SELECT * FROM CHAMADO',(erro,resultado) => {
+        if(erro){
+            throw erro
+        }
+        
+        res.render('colunas', {colunas: xColunas, chamados: resultado.rows, tipos_chamado: xTipo_Protocolo})
+    })
 })
 
 // method GET
-app.get('/getChamado/', (requisicao, resposta)=>{
-    pool.query('SELECT * FROM CHAMADO',(erro,resultado) => {
+app.get('/getChamado/:id', (requisicao, resposta)=>{
+
+    let condicao = ''
+    if (requisicao.params.id){
+        condicao = `WHERE ID = ${requisicao.params.id}`
+    }
+
+    pool.query(`SELECT * FROM CHAMADO ${condicao}`,(erro,resultado) => {
         if(erro){
             throw erro
         }

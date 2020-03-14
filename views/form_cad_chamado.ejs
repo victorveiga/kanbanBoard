@@ -1,0 +1,57 @@
+<section>
+    <form id="form_protocolo">
+        <!-- Formulário de protocolo -->
+        <div class="modal fade" id="formProtocolo" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="ModalLabel">Criar novo protocolo</h5> 
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body">
+
+                <div> <!-- div formulario -->
+                    <div class="form-group">
+                    <div class="row d-flex justify-content-end">
+                        
+                    </div>
+                    </div>
+                    <div class="form-group">
+                    <label for="select_status">Status:</label>
+                    <select class="form-control" id="select_status" name="select_status" required>
+                        <option selected value="1">Caixa de entrada</option>
+                        <option value="2">Em execução</option>
+                        <option value="3">Em aprovação</option>
+                        <option value="4">Aguardando versão</option>
+                    </select>
+                    </div>
+                    <div class="form-group">
+                    <label for="recipient_name" class="col-form-label">Título do protocolo:</label>
+                    <input type="text" class="form-control" id="recipient_name" name="recipient_name" required>
+                    </div>
+                    <div class="form-group">
+                    <label for="message_text" class="col-form-label">Descrição:</label>
+                    <textarea class="form-control" id="message_text" name="message_text" required></textarea>
+                    </div>
+                    <div class="form-group">
+                    <label for="tipo_protocolo" class="col-form-label">Tipo de protocolo:</label>
+                    <select class="form-control" id="tipo_protocolo" name="tipo_protocolo" required>
+                        <option value=""></option> 
+                        <option value="i">Inconsistência</option> 
+                        <option value="n">Novo recurso</option>
+                        <option value="m">Melhoria</option>
+                    </select>
+                    </div>
+                </div>
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button id="btn_salvar_protocolo" type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </div>
+            </div>
+        </div>
+    </form>
+</section>    

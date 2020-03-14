@@ -8,12 +8,12 @@
                 ondrop="soltar(event)">
                 <span style="display: block; border-bottom: 1px solid #ccc; margin-bottom: 5px;"><%= colunas[coluna].descricao%></span>
 
-                <% Array.from(chamados).forEach(chamado => {%> <!-- Laço de chamados -->
+                <% Array.from(chamados).forEach(chamado => { //Laço de chamados %>
 
                     <% if (chamado.status == colunas[coluna].id) {%>
 
-                        <!-- Seta tipo chamado -->
-                        <% 
+                        
+                        <% // Seta tipo chamado 
                             let descricao_tipo_protocolo = ''
                             let cor                      = ''
                             let id_protocolo             = 'card_'+chamado.id
@@ -25,7 +25,7 @@
                             });
                         %> 
 
-                        <!-- Chamado Card -->
+                        <%// Chamado Card %>
                         <div id="<%= id_protocolo %>" 
                                 draggable="true"
                                 ondragstart="arrastarInicio(event)" 
@@ -42,10 +42,10 @@
                                     <button id="btn_protocolo_<%=chamado.id%>" class="btn btn-outline-light mt-3" onclick="AbreCard(this.id.replace('btn_protocolo_',''))">Abrir</button>
                                 </div>
                         </div>
-                        <!-- Fim Chamado Card -->
+                        <%// Fim Chamado Card %>
                     <% } %>
 
-                <% });%> <!-- Laço de chamados -->
+                <% }); // Laço de chamado%>
             </div>
         <% }%>    
     </div>

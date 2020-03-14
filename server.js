@@ -9,120 +9,19 @@
 *                                                            *
 *************************************************************/
 
-const config         = require('./config')
-const parse          = require('url').parse
-const rootFolder     = config.rootFolder
-const defaultIndex   = config.defaultIndex
-const port           = config.port
+const {port}         = require('./config')
 const express        = require('express')
 const app            = express()
 const bodyParser     = require('body-parser')
-const pool           = new require('./postgresql-database')
 const expressLayouts = require('express-ejs-layouts')
+const routes         = require('./routes');
 
 app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
-app.use(express.static(__dirname));
+app.use(express.static('public'));
 app.set('view engine', 'ejs')
 app.use(expressLayouts) 
-
-// Busca alguns dados preliminares
-let xColunas = null
-
-pool.query('SELECT * FROM COLUNA',(erro,resultado) => {
-    if(erro){ throw erro }
-    xColunas = resultado.rows
-})
-
-let xTipo_Protocolo = Array(
-    { id: 'i' , cor: 'danger'  , descricao: 'Inconsistência' },
-    { id: 'n' , cor: 'success' , descricao: 'Novo recurso'   },
-    { id: 'm' , cor: 'info'    , descricao: 'Melhoria'       }
-)
-
-
-// Rota principal
-app.get('/', (req, res)=>{
-    pool.query('SELECT * FROM CHAMADO',(erro,resultado) => {
-        if(erro){
-            throw erro
-        }
-        
-        res.render('colunas', {colunas: xColunas, chamados: resultado.rows, tipos_chamado: xTipo_Protocolo})
-    })
-})
-
-// method GET
-app.get('/getChamado/:id', (requisicao, resposta)=>{
-
-    let condicao = ''
-    if (requisicao.params.id){
-        condicao = `WHERE ID = ${requisicao.params.id}`
-    }
-
-    pool.query(`SELECT * FROM CHAMADO ${condicao}`,(erro,resultado) => {
-        if(erro){
-            throw erro
-        }
-        resposta.status(200).send(resultado.rows)
-    })
-})
-
-// method post
-app.post('/adicionarProtocolo/', function (req, res) {
-
-    //response.status(200).send(`User deleted with ID: ${id}`)
-
-    let sql = `INSERT INTO CHAMADO (
-                    TITULO,
-                    DESCRICAO,
-                    TIPO_PROTOCOLO,
-                    STATUS
-              ) VALUES (
-                    '${req.body.recipient_name}',
-                    '${req.body.message_text}',
-                    '${req.body.tipo_protocolo}',
-                    ${req.body.select_status}
-              )`      
-
-    pool.query(sql,(erro) => { if (erro){ throw erro } })
-
-    res.redirect('/')
-});
-
-// method put
-app.post('/atualizarProtocolo/:id', function (req, res) {
-
-    let sql = `UPDATE CHAMADO SET 
-                    TITULO = '${req.body.recipient_name}',
-                    DESCRICAO = '${req.body.message_text}',
-                    TIPO_PROTOCOLO = '${req.body.tipo_protocolo}',
-                    STATUS = ${req.body.select_status}
-               WHERE ID = ${req.params.id}`      
-    pool.query(sql, (erro)=>{if (erro){throw erro}})
-
-    res.redirect('/')
-});
-
-app.post('/atualizarStatus/', function (req, res) {
-
-    let sql = `UPDATE CHAMADO SET 
-                    STATUS = ${req.body.select_status}
-               WHERE ID = ${req.body.id}`      
-    pool.query(sql, (erro)=>{if (erro){throw erro}})
-
-    res.redirect('/')
-
-});
-
-// method delete
-app.post('/removerChamado/', function (req, res) {
-
-    let sql = `DELETE FROM CHAMADO WHERE ID = ${req.body.id}`      
-    pool.query(sql, (erro)=>{if (erro){throw erro}})
-
-    res.status(200).redirect('/')
-});
+app.use(routes)
 
 app.listen(port, function () {
     console.log('Servidor iniciado na porta: ' + port);

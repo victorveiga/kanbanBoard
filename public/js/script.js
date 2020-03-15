@@ -11,7 +11,7 @@ function formularioDefault() {
 function AbreCard(id) {
 
     let obj = null
-    let http = new XMLHttpRequest()
+    /*let http = new XMLHttpRequest()
     http.open('GET', 'getChamado/'+id)
     http.onreadystatechange = () => {
         if(http.readyState == XMLHttpRequest.DONE && http.status == 200){
@@ -32,7 +32,23 @@ function AbreCard(id) {
             $('#formProtocolo').modal('show')
         }
     }
-    http.send()
+    http.send() */
+    getChamado(id).then((obj)=>{
+        $('#recipient_name').val(obj.titulo)
+        $('#message_text'  ).val(obj.descricao)
+        $('#tipo_protocolo').val(obj.tipo_protocolo)
+        $('#select_status' ).val(obj.status)
+        
+        $('#ModalLabel').text(`Protocolo Nº ${id}`)
+
+        $('#form_protocolo').removeAttr('action')
+        $('#form_protocolo').removeAttr('method')
+
+        $('#form_protocolo').attr('action', '/atualizarProtocolo/'+id)
+        $('#form_protocolo').attr('method','POST'  )
+
+        $('#formProtocolo').modal('show')
+    })
 }
 
 function removerChamado(id) {
@@ -47,42 +63,55 @@ function removerChamado(id) {
     http.send(`id=${id.replace('card_','')}`)
 }
 
+function getChamado(id){
+    return new Promise((resolve, reject)=>{
+        let http = new XMLHttpRequest()
+        http.open('GET', 'getChamado/'+id)
+        http.onreadystatechange = () => {
+            if(http.readyState == XMLHttpRequest.DONE){
+                
+                switch (http.status) {
+                    case 200:
+                        resolve(JSON.parse(http.response)[0])
+                        break;   
+                
+                    default:
+                        reject({status: http.status, statusText: http.statusText})
+                        break;
+                }
+            }
+        }
+        http.send()
+    })
+}
+
 /* Eventos de drag on drop */
 
 function arrastarInicio(e) {
-    e.dataTransfer.setData("elemento_transferido", e.target.id);
-    event.target.style.opacity = "0.4";
+    e.dataTransfer.setData("elemento_transferido", e.target.id)
+    event.target.style.opacity = "0.4"
 }
 
 function permiteSoltar(e) {
-    e.preventDefault();
+    e.preventDefault()
 }
 
 function soltar(e) {
-    e.preventDefault();
+    e.preventDefault()
 
     xColunas.forEach(el => {
         if (el.id_nome == e.target.id) {
             var protocolo = document.getElementById( event.dataTransfer.getData("elemento_transferido") )
-            e.target.appendChild(protocolo);
-            event.target.style.opacity = "1"; 
+            e.target.appendChild(protocolo)
+            event.target.style.opacity = "1"
             
-            let xhr = new XMLHttpRequest()
-            xhr.open('POST','atualizarStatus')
-            xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-            xhr.onreadystatechange = () => {
-                if ((xhr.readyState == xhr.DONE) && (xhr.status == 200)){
-                    //console.log(xhr.readyState, xhr.status)
-                }
-            }
-
-            xhr.send(`id=${protocolo.id.replace('card_','')}&select_status=${el.id}`); 
+            socket.emit('card arrastado', `${protocolo.id.replace('card_','')}=>${el.id}=>${el.id_nome}`)
         }
     })
 }
 
 document.addEventListener("dragend", function(event) {
-    event.target.style.opacity = "1";
+    event.target.style.opacity = "1"
 });
 
 // ----------------------------- INICIO ------------------------------------ \\
@@ -94,3 +123,17 @@ let xColunas = Array(
     { id: 3 , id_nome: 'aprovacao'         , descricao:'Em aprovação'     },
     { id: 4 , id_nome: 'aguardando_versao' , descricao:'Aguardando versão'}
 )
+
+let socket = io()
+// Comunicação via socket
+socket.on('cards atualizados', (data) => {
+
+    let {id,id_coluna} = data
+
+    getChamado(id).then((obj)=>{
+        let cardOrigem = $('#card_'+obj.id)
+        let colunaDestino = $('#'+id_coluna)
+        colunaDestino.append(cardOrigem)
+    })
+
+})

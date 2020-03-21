@@ -1,0 +1,43 @@
+<%- contentFor('body') %>
+<div class="container" id="principal">
+   <div class="row">
+        <div class="col-md-5 mx-auto">
+         <div class="myform form">
+
+            <div class="logo mb-3">
+               <div class="col-md-12 text-center">
+                  <h1>Ponto de entrada</h1>
+               </div>
+            </div>
+
+            <form action="/login" method="post" name="login">
+               <div class="form-group">
+                  <label for="username">Nome de usuário</label>
+                  <input type="text" name="username"  class="form-control" id="username" aria-describedby="emailHelp" placeholder="Entre com seu nome de usuário">
+               </div>
+               <div class="form-group">
+                  <label for="password">Senha</label>
+                  <input type="password" name="password" id="password"  class="form-control" aria-describedby="emailHelp" placeholder="Entre com sua senha">
+               </div>
+               <div class="form-group">
+                  <p class="text-center">Ao se inscrever, você aceita nossos <a href="#">Termos de uso</a></p>
+               </div>
+               <div class="col-md-12 text-center ">
+                  <button type="submit" class=" btn btn-block mybtn btn-primary tx-tfm">Entrar</button>
+               </div>
+               <div class="col-md-12 ">
+                  <div class="login-or">
+                     <hr class="hr-or">
+                     <span class="span-or">ou</span>
+                  </div>
+               </div>
+               <div class="form-group">
+                  <p class="text-center">Não tem conta? <a href="/signin" id="signup">Inscreva-se aqui</a></p>
+               </div>
+            </form>
+            
+         </div>     
+        
+      </div>
+   </div>
+</div>

@@ -63,6 +63,28 @@ function getChamado(id){
     })
 }
 
+function getUsuario(){
+    let http = new XMLHttpRequest()
+        http.open('GET', 'getIDUsuario/')
+        http.onreadystatechange = () => {
+            if(http.readyState == XMLHttpRequest.DONE){
+                
+                switch (http.status) {
+                    case 200:
+                        let resultado = JSON.parse(http.response)
+                        id_usuario = resultado.id
+                        nome_usuario = resultado.username
+                        break;   
+                
+                    default:
+                        console.log({status: http.status, statusText: http.statusText})
+                        break;
+                }
+            }
+        }
+        http.send()
+}
+
 /* Eventos de drag on drop */
 
 function arrastarInicio(e) {
@@ -77,13 +99,15 @@ function permiteSoltar(e) {
 function soltar(e) {
     e.preventDefault()
 
+    // VERIFICAR colocar para identificar a coluna automaticamente sem utilizar o arrya xColunas
     xColunas.forEach(el => {
         if (el.id_nome == e.target.id) {
             var protocolo = document.getElementById( event.dataTransfer.getData("elemento_transferido") )
             e.target.appendChild(protocolo)
             event.target.style.opacity = "1"
             
-            socket.emit('card arrastado', `${protocolo.id.replace('card_','')}=>${el.id}=>${el.id_nome}`)
+            socket.emit('card arrastado', `${protocolo.id.replace('card_','')}=>${el.id}=>${el.id_nome}=>${id_usuario}`)
+            $(`#${event.dataTransfer.getData("elemento_transferido")} #nome_usuario`)[0].innerText = '@'+nome_usuario
         }
     })
 }
@@ -102,8 +126,13 @@ let xColunas = Array(
     { id: 4 , id_nome: 'aguardando_versao' , descricao:'Aguardando versão'}
 )
 
-let socket = io()
+let id_usuario   = null
+let nome_usuario = null
+getUsuario()
+
 // Comunicação via socket
+let socket = io()
+
 socket.on('cards atualizados', (data) => {
-    window.location.href = '/'
+    document.getElementById('section_quadro').innerHTML = data
 })

@@ -1,0 +1,36 @@
+<%- contentFor('body') %>
+<div class="container" id="principal">
+    <div class="row">
+        <div class="col-md-5 mx-auto">
+            <div class="myform form ">
+                    <div class="logo mb-3">
+                    <div class="col-md-12 text-center">
+                        <h1 >Inscreva-se!</h1>
+                    </div>
+                    </div>
+                    <form action="/signin" method="post" name="registration">
+                        <div class="form-group">
+                            <label for="firstname">Nome de usuario</label>
+                            <input type="text"  name="username" class="form-control" id="firstname" aria-describedby="emailHelp" placeholder="Informe um nome de usuário" required>
+                        </div>
+                        <div class="form-group">
+                        <label for="email">E-mail</label>
+                        <input type="email" name="email"  class="form-control" id="email" aria-describedby="emailHelp" placeholder="Informe seu email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="senha">Password</label>
+                            <input type="password" name="password" id="senha"  class="form-control" aria-describedby="emailHelp" placeholder="Informe uma senha" required>
+                        </div>
+                        <div class="col-md-12 text-center mb-3">
+                            <button type="submit" class=" btn btn-block mybtn btn-primary tx-tfm">Comece agora</button>
+                        </div>
+                        <div class="col-md-12 ">
+                            <div class="form-group">
+                                <p class="text-center"><a href="/" id="signin">Já tem uma conta?</a></p>
+                            </div>
+                        </div>
+                    </form>
+            </div> 
+        </div>
+    </div>
+</div>

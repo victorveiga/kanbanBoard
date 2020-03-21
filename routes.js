@@ -1,36 +1,23 @@
-const { Router } = require('express')
-const routes     = new Router();;
-const db         = require('./database')
-const fs         = require('fs');
+const { Router }       = require('express')
+const routes           = new Router()
+const db               = require('./database')
+const QuadroController = require('./controllers/QuadroController')
 
-// Rota principal
-routes.get('/', (req, res)=>{
-
-    let xTipo_Protocolo = Array(
-        { id: 'i' , cor: 'danger'  , descricao: 'Inconsistência' },
-        { id: 'n' , cor: 'success' , descricao: 'Novo recurso'   },
-        { id: 'm' , cor: 'info'    , descricao: 'Melhoria'       }
-    )
-
-    let formulario = null
-
-    fs.readFile(__dirname+'/views/form_cad_chamado.ejs', 'utf-8',(erro, data) => {
-        formulario = data
-    })
-
-    db.ExecSQL('SELECT * FROM COLUNA').then( resColunas =>{
-        db.ExecSQL('SELECT * FROM CHAMADO').then( resChamados => {
-            res.render('colunas', { colunas: resColunas, 
-                                    chamados: resChamados, 
-                                    tipos_chamado: xTipo_Protocolo,
-                                    form_cad_chamado: formulario
-                                })
-        } )
-    })
+// Login
+routes.get('/login', (req, res)=>{
+    res.render('login')
 })
 
+routes.get('/logout', (req, res) => {
+    req.logout()
+    res.redirect('/')
+})
+
+// Rota principal
+routes.get('/', require('connect-ensure-login').ensureLoggedIn(), QuadroController.index)
+
 // method GET
-routes.get('/getChamado/:id', (requisicao, resposta)=>{
+routes.get('/getChamado/:id', require('connect-ensure-login').ensureLoggedIn(), (requisicao, resposta)=>{
 
     let condicao = ''
     if (requisicao.params.id){
@@ -42,19 +29,45 @@ routes.get('/getChamado/:id', (requisicao, resposta)=>{
     })
 })
 
+routes.get('/signin', (req,res)=>{
+    res.render('signin')
+})
+
+routes.post('/signin', (req,res)=>{
+    let sql = `INSERT INTO USUARIO ( USERNAME, EMAIL, PASSWORD )
+               VALUES
+               ('${req.body.username}','${req.body.email}','${req.body.password}')`
+
+    db.ExecSQL(sql).then(resultado => {
+        res.status(200).redirect('/')
+    })           
+})
+
+routes.get('/getIDUsuario/', (req,res)=>{
+    let id = null
+    let username = null
+    if (req.user){
+        id = req.user.id
+        username = req.user.username
+    }
+    res.status(200).send({id,username})
+})
+
 // method post
-routes.post('/adicionarProtocolo/', function (req, res) {
+routes.post('/adicionarProtocolo/', require('connect-ensure-login').ensureLoggedIn(), function (req, res) {
 
     let sql = `INSERT INTO CHAMADO (
                     TITULO,
                     DESCRICAO,
                     TIPO_PROTOCOLO,
-                    STATUS
+                    STATUS,
+                    ID_USUARIO
               ) VALUES (
                     '${req.body.recipient_name}',
                     '${req.body.message_text}',
                     '${req.body.tipo_protocolo}',
-                    ${req.body.select_status}
+                     ${req.body.select_status},
+                     ${req.user.id}
               )`      
 
     db.ExecSQL(sql)
@@ -62,29 +75,31 @@ routes.post('/adicionarProtocolo/', function (req, res) {
 });
 
 // method put
-routes.post('/atualizarProtocolo/:id', function (req, res) {
+routes.post('/atualizarProtocolo/:id', require('connect-ensure-login').ensureLoggedIn(), function (req, res) {
 
     let sql = `UPDATE CHAMADO SET 
                     TITULO = '${req.body.recipient_name}',
                     DESCRICAO = '${req.body.message_text}',
                     TIPO_PROTOCOLO = '${req.body.tipo_protocolo}',
-                    STATUS = ${req.body.select_status}
+                    STATUS = ${req.body.select_status},
+                    ID_USUARIO = ${req.user.id}
                WHERE ID = ${req.params.id}`      
     db.ExecSQL(sql)
     res.redirect('/')
 });
 
-routes.post('/atualizarStatus/', function (req, res) {
+routes.post('/atualizarStatus/', require('connect-ensure-login').ensureLoggedIn(), function (req, res) {
 
     let sql = `UPDATE CHAMADO SET 
-                    STATUS = ${req.body.select_status}
-               WHERE ID = ${req.body.id}`      
+                    STATUS = ${req.body.select_status},
+                    ID_USUARIO = ${req.user.id}
+               WHERE ID = ${req.body.id}`              
     db.ExecSQL(sql)
     res.redirect('/')
 });
 
 // method delete
-routes.post('/removerChamado/', function (req, res) {
+routes.post('/removerChamado/', require('connect-ensure-login').ensureLoggedIn(), function (req, res) {
 
     let sql = `DELETE FROM CHAMADO WHERE ID = ${req.body.id}`      
 

@@ -1,7 +1,7 @@
-const { Router }       = require('express')
-const routes           = new Router()
-const db               = require('./database')
-const QuadroController = require('./controllers/QuadroController')
+const { Router }            = require('express')
+const routes                = new Router()
+const db                    = require('./database')
+const MainController        = require('./controllers/MainController')
 
 // Login
 routes.get('/login', (req, res)=>{
@@ -14,7 +14,7 @@ routes.get('/logout', (req, res) => {
 })
 
 // Rota principal
-routes.get('/', require('connect-ensure-login').ensureLoggedIn(), QuadroController.index)
+routes.get('/', require('connect-ensure-login').ensureLoggedIn(), MainController.home)
 
 // method GET
 routes.get('/getChamado/:id', require('connect-ensure-login').ensureLoggedIn(), (requisicao, resposta)=>{
@@ -54,7 +54,7 @@ routes.get('/getIDUsuario/', (req,res)=>{
 })
 
 // method post
-routes.post('/adicionarProtocolo/', require('connect-ensure-login').ensureLoggedIn(), function (req, res) {
+routes.post('/adicionarProtocolo/', require('connect-ensure-login').ensureLoggedIn(), (req, res)=> {
 
     let sql = `INSERT INTO CHAMADO (
                     TITULO,
@@ -75,7 +75,7 @@ routes.post('/adicionarProtocolo/', require('connect-ensure-login').ensureLogged
 });
 
 // method put
-routes.post('/atualizarProtocolo/:id', require('connect-ensure-login').ensureLoggedIn(), function (req, res) {
+routes.post('/atualizarProtocolo/:id', require('connect-ensure-login').ensureLoggedIn(), (req, res)=> {
 
     let sql = `UPDATE CHAMADO SET 
                     TITULO = '${req.body.recipient_name}',
@@ -88,7 +88,7 @@ routes.post('/atualizarProtocolo/:id', require('connect-ensure-login').ensureLog
     res.redirect('/')
 });
 
-routes.post('/atualizarStatus/', require('connect-ensure-login').ensureLoggedIn(), function (req, res) {
+routes.post('/atualizarStatus/', require('connect-ensure-login').ensureLoggedIn(), (req, res) => {
 
     let sql = `UPDATE CHAMADO SET 
                     STATUS = ${req.body.select_status},
@@ -99,12 +99,14 @@ routes.post('/atualizarStatus/', require('connect-ensure-login').ensureLoggedIn(
 });
 
 // method delete
-routes.post('/removerChamado/', require('connect-ensure-login').ensureLoggedIn(), function (req, res) {
+routes.post('/removerChamado/', require('connect-ensure-login').ensureLoggedIn(), (req, res) => {
 
     let sql = `DELETE FROM CHAMADO WHERE ID = ${req.body.id}`      
 
     db.ExecSQL(sql)
     res.redirect('/')
 });
+
+routes.get('/fila_chamado_usuario/', require('connect-ensure-login').ensureLoggedIn(), MainController.fila)
 
 module.exports = routes

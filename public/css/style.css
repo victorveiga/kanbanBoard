@@ -1,5 +1,5 @@
 html, body {
-   overflow-x: hidden;
+   overflow: hidden;
    height: 100%;
    background-color: #f9f8f8;
 }
@@ -10,6 +10,11 @@ footer, footer a {
 
 footer a:hover {
     color: white;
+}
+
+table tbody tr:hover {
+   cursor: pointer;
+   background-color: #f9f8f8;
 }
 
 .aColuna {

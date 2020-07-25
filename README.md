@@ -1,6 +1,9 @@
 # kanbanBoard
 #### Central de chamados com quadro Kanban  
-O projeto foi meu primeiro desafio utilizando ferramentas web. O intuito era criar uma aplicação web tradicional, aplicando conceitos básicos que aprendi inicialmente.  
+O projeto foi meu primeiro desafio utilizando ferramentas web. O intuito era criar uma aplicação web tradicional, aplicando conceitos básicos que aprendi inicialmente. 
+
+A home page da aplicação possui um quadro com colunas que representam status de um chamado. As colunas recebem pequenas caixas que são os próprios chamados. Para trocar o status de uma chamado, basta arrastar com o mouse o respectivo item para a coluna desejada. A cada troca o usuário que realizou a movimentação fica como responsável pelo chamado. As movimentações são realizadas e atualizados para todos os usuários em tempo real utilizando a biblioteca javascript Socket.IO.  
+
 Developer: Victor Veiga  
 Data: 25/07/2020  
 

@@ -1,7 +1,7 @@
 {
    "user": "postgres",
-   "host": "",
+   "host": "localhost",
    "database": "kbDados",
-   "password": "",
+   "password": "123",
    "port": "5432"
 }
